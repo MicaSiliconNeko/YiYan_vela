@@ -1,8 +1,8 @@
 {
   "package": "io.github.micasiliconneko.hikoto",
   "name": "一言",
-  "versionName": "1.6.5",
-  "versionCode": 22,
+  "versionName": "1.6.6",
+  "versionCode": 23,
   "minPlatformVersion": 1000,
   "icon": "/common/logo.png",
   "deviceTypeList": [

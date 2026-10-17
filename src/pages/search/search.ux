@@ -40,6 +40,7 @@
         <text class="s-cardtext s-sz17" if="{{textSize == 17}}">{{pageText}}</text>
         <text class="s-cardtext s-sz14" if="{{textSize == 14}}">{{pageText}}</text>
         <text class="s-cardtext s-sz12" if="{{textSize == 12}}">{{pageText}}</text>
+        <text class="s-cardtext s-sz10" if="{{textSize == 10}}">{{pageText}}</text>
       </div>
       <!-- 出处字号按长度自适应（同首页） -->
       <div class="s-from-box" if="{{showFrom}}">
@@ -49,6 +50,7 @@
         <text class="s-cardfrom s-sz17" if="{{fromSize == 17}}">{{pageFrom}}</text>
         <text class="s-cardfrom s-sz14" if="{{fromSize == 14}}">{{pageFrom}}</text>
         <text class="s-cardfrom s-sz12" if="{{fromSize == 12}}">{{pageFrom}}</text>
+        <text class="s-cardfrom s-sz10" if="{{fromSize == 10}}">{{pageFrom}}</text>
       </div>
     </div>
 
@@ -93,7 +95,7 @@
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    height: 72px;
+    height: 56px;
     margin-top: 6px;
     margin-bottom: 6px;
   }
@@ -119,16 +121,16 @@
   }
 
   .s-icon-btn {
-    width: 72px;
-    height: 72px;
+    width: 56px;
+    height: 56px;
     justify-content: center;
     align-items: center;
-    border-radius: 36px;
+    border-radius: 28px;
     background-color: #262626;
   }
 
   .s-icon-btn-text {
-    font-size: 24px;
+    font-size: 22px;
     color: #ffffff;
     text-align: center;
   }
@@ -138,13 +140,13 @@
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    height: 72px;
+    height: 56px;
     margin-bottom: 6px;
   }
 
   .s-inputcard {
     flex: 1;
-    height: 72px;
+    height: 56px;
     justify-content: center;
     align-items: center;
     border-radius: 20px;
@@ -171,12 +173,12 @@
   }
 
   .s-search-btn {
-    width: 72px;
-    height: 72px;
+    width: 56px;
+    height: 56px;
     margin-left: 6px;
     justify-content: center;
     align-items: center;
-    border-radius: 36px;
+    border-radius: 28px;
     background-color: #0d6eff;
   }
 
@@ -187,7 +189,7 @@
     align-items: center;
     flex: 1;
     width: 100%;
-    padding: 10px;
+    padding: 6px;
     background-color: #262626;
     border-radius: 20px;
   }
@@ -216,13 +218,14 @@
   .s-sz17 { font-size: 17px; }
   .s-sz14 { font-size: 14px; }
   .s-sz12 { font-size: 12px; }
+  .s-sz10 { font-size: 10px; }
 
   /* 出处：白 60%；字号跟着正文档位走（复用 .s-szN），lines:2 只作安全上限 */
   .s-from-box {
     width: 100%;
     flex-direction: column;
     align-items: flex-end;
-    margin-top: 8px;
+    margin-top: 4px;
   }
 
   .s-cardfrom {
@@ -239,7 +242,7 @@
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    height: 52px;
+    height: 56px;
     margin-top: 6px;
     margin-bottom: 6px;
   }
@@ -248,8 +251,8 @@
     justify-content: center;
     align-items: center;
     width: 48%;
-    height: 52px;
-    border-radius: 26px;
+    height: 56px;
+    border-radius: 28px;
     background-color: #262626;
   }
 
@@ -275,23 +278,23 @@
   import router from '@system.router';
   import device from '@system.device';
 
-  // 水平方向被吃掉的宽度：页面左右 padding 6*2 + 卡片 padding 10*2
-  const TEXT_INSET = 32;
+  // 水平方向被吃掉的宽度：页面左右 padding 6*2 + 卡片 padding 6*2
+  const TEXT_INSET = 24;
   // 竖向固定占用（改上面 CSS 的尺寸时，这几个数要跟着改）
   const PAGE_PAD_V = 0;       // 上下 6 由 topbar / s-nav 的 margin 提供
-  const TOPBAR_H = 84;        // s-topbar 72 + 上下 margin 各 6
-  const INPUTROW_H = 78;      // s-inputrow 72 + margin 6
-  const NAV_H = 64;           // s-nav 52 + 上下 margin 各 6
-  const CARD_PAD_V = 20;      // s-card padding 10*2
+  const TOPBAR_H = 68;        // s-topbar 56 + 上下 margin 各 6
+  const INPUTROW_H = 68;      // s-inputrow 56 + 上下 margin 各 6
+  const NAV_H = 68;           // s-nav 56 + 上下 margin 各 6
+  const CARD_PAD_V = 12;      // s-card padding 6*2
 
   // 出处字号 = 正文档位「往下退一档」（同首页）
-  const FROM_OF_BODY = [28, 24, 20, 17, 14, 12, 12];
+  const FROM_OF_BODY = [28, 24, 20, 17, 14, 12, 10, 10];
   const FROM_LINES_MAX = 2;
   const FROM_LINE_RATIO = 1.5;
   const FROM_MARGIN = 8;
 
   // 字号档位（与模板 if 条件、上面 .s-szN 类一一对应）
-  const SIZES = [32, 28, 24, 20, 17, 14, 12];
+  const SIZES = [32, 28, 24, 20, 17, 14, 12, 10];
   const LINE_RATIO = 1.7;
   const NARROW = 0.55;
 
