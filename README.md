@@ -22,7 +22,7 @@
 
 | 文件 | 句子数 | 体积 | 说明 |
 |---|---|---|---|
-| `io.github.micasiliconneko.hikoto.v1.6.6.rpk` | 7000 | 753 KB | 数据分 8 个文件加载，自签正式证书签名 |
+| `io.github.micasiliconneko.hikoto.v1.6.8.rpk` | 7000 | 759 KB | 数据分 8 个文件加载，自签正式证书签名 |
 
 安装：点下面的徽标直接用 AstroBox 打开，或在 AstroBox 里搜索「一言」。
 

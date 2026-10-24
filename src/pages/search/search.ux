@@ -78,8 +78,8 @@
 </template>
 
 <style>
-  /* ---- 设计令牌同首页：背景 #000000 · 卡片/圆钮 #262626 · 强调 #0D6EFF
-     文字 32 白 · 次要 28 白 60%（#999999）· 圆钮 72 · 圆角 20 · 边距 6 ---- */
+  /* ---- 设计令牌同首页：背景 #000000   卡片/圆钮 #262626   强调 #0D6EFF
+     文字 32 白   次要 28 白 60%（#999999）  圆钮 72   圆角 20   边距 6 ---- */
   .s-page {
     width: 100%;
     height: 100%;
@@ -287,7 +287,7 @@
   const NAV_H = 68;           // s-nav 56 + 上下 margin 各 6
   const CARD_PAD_V = 12;      // s-card padding 6*2
 
-  // 出处字号 = 正文档位「往下退一档」（同首页）
+  // 出处字号 = 正文档位往下退一档（同首页）
   const FROM_OF_BODY = [28, 24, 20, 17, 14, 12, 10, 10];
   const FROM_LINES_MAX = 2;
   const FROM_LINE_RATIO = 1.5;
@@ -386,7 +386,7 @@
       }
     },
 
-    /** 字数换算成「汉字宽度」单位数（半角按 0.55 计） */
+    /** 字数换算成汉字宽度单位数（半角按 0.55 计） */
     unitsOf(s) {
       let n = 0;
       for (let i = 0; i < s.length; i++) {
@@ -445,7 +445,7 @@
       return h > MIN_AREA_H ? h : MIN_AREA_H;
     },
 
-    /** 从档位里挑一个「整句能完整放下」的最大字号，推导见 index.ux。 */
+    /** 从档位里挑一个整句能完整放下的最大字号，推导见 index.ux。 */
     pickSize(text, srcH) {
       if (!text) {
         return SIZES[0];
@@ -530,7 +530,7 @@
       if (!found.length) {
         this.hasResults = false;
         this.results = [];
-        this.extraText = '没有找到出处包含「' + k + '」的句子';
+        this.extraText = '没有找到和 ' + k + ' 相关的出处';
         this.refresh();
         return;
       }
@@ -539,7 +539,7 @@
       this.hasResults = true;
       this.extraText = '';
       this.pageTotal = found.length;
-      console.info('一言：搜索「' + k + '」命中 ' + found.length + ' 条');
+      console.info('一言：搜索' + k + '命中 ' + found.length + ' 条');
       this.showPage(1);
     },
 

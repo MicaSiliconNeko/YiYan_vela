@@ -1,0 +1,471 @@
+<template>
+  <div class="f-page">
+    <!-- 顶栏：56 圆钮 + 居中标题 + 当前/总数（无源流沙规范） -->
+    <div class="f-topbar">
+      <div class="f-icon-btn" onclick="goBack">
+        <text class="f-icon-btn-text">返回</text>
+      </div>
+      <div class="f-titlebox">
+        <text class="f-title">收藏</text>
+        <text class="f-count" if="{{hasList}}">{{cur}}/{{total}}</text>
+      </div>
+      <div class="f-icon-btn" if="{{hasList}}" onclick="removeCurrent">
+        <text class="f-icon-btn-text">移除</text>
+      </div>
+      <div class="f-icon-btn-holder" if="{{showHolder}}"></div>
+    </div>
+
+    <!-- 收藏内容：与首页同一套字号档位（模板 if 挑选，不用动态 style） -->
+    <div class="f-card" if="{{hasList}}">
+      <div class="f-text-area">
+        <text class="f-cardtext f-sz32" if="{{textSize == 32}}">{{pageText}}</text>
+        <text class="f-cardtext f-sz28" if="{{textSize == 28}}">{{pageText}}</text>
+        <text class="f-cardtext f-sz24" if="{{textSize == 24}}">{{pageText}}</text>
+        <text class="f-cardtext f-sz20" if="{{textSize == 20}}">{{pageText}}</text>
+        <text class="f-cardtext f-sz17" if="{{textSize == 17}}">{{pageText}}</text>
+        <text class="f-cardtext f-sz14" if="{{textSize == 14}}">{{pageText}}</text>
+        <text class="f-cardtext f-sz12" if="{{textSize == 12}}">{{pageText}}</text>
+        <text class="f-cardtext f-sz10" if="{{textSize == 10}}">{{pageText}}</text>
+      </div>
+      <div class="f-from-box" if="{{showFrom}}">
+        <text class="f-cardfrom f-sz28" if="{{fromSize == 28}}">{{pageFrom}}</text>
+        <text class="f-cardfrom f-sz24" if="{{fromSize == 24}}">{{pageFrom}}</text>
+        <text class="f-cardfrom f-sz20" if="{{fromSize == 20}}">{{pageFrom}}</text>
+        <text class="f-cardfrom f-sz17" if="{{fromSize == 17}}">{{pageFrom}}</text>
+        <text class="f-cardfrom f-sz14" if="{{fromSize == 14}}">{{pageFrom}}</text>
+        <text class="f-cardfrom f-sz12" if="{{fromSize == 12}}">{{pageFrom}}</text>
+        <text class="f-cardfrom f-sz10" if="{{fromSize == 10}}">{{pageFrom}}</text>
+      </div>
+    </div>
+
+    <!-- 空状态 -->
+    <div class="f-empty" if="{{isEmpty}}">
+      <text class="f-empty-text">还没有收藏</text>
+      <text class="f-empty-hint">在首页点收藏，把喜欢的句子存下来</text>
+    </div>
+
+    <div class="f-nav" if="{{hasList}}">
+      <div class="f-navbtn" onclick="prev">
+        <text class="f-navtext">上一句</text>
+      </div>
+      <div class="f-navbtn" onclick="next">
+        <text class="f-navtext">下一句</text>
+      </div>
+    </div>
+  </div>
+</template>
+
+<style>
+  /* 令牌与其它页一致：背景 #000000   卡片/圆钮 #262626   强调 #0D6EFF
+     圆钮 56   圆角 20   页面边距 6   字号 32…10 */
+  .f-page {
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 6px;
+    background-color: #000000;
+  }
+
+  .f-topbar {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    height: 56px;
+    margin-top: 6px;
+    margin-bottom: 6px;
+  }
+
+  .f-titlebox {
+    flex: 1;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .f-title {
+    font-size: 32px;
+    font-weight: bold;
+    color: #ffffff;
+    text-align: center;
+  }
+
+  .f-count {
+    font-size: 24px;
+    color: #999999;
+    margin-left: 8px;
+  }
+
+  .f-icon-btn {
+    width: 56px;
+    height: 56px;
+    justify-content: center;
+    align-items: center;
+    border-radius: 28px;
+    background-color: #262626;
+  }
+
+  .f-icon-btn-holder {
+    width: 56px;
+    height: 56px;
+  }
+
+  .f-icon-btn-text {
+    font-size: 22px;
+    color: #ffffff;
+    text-align: center;
+  }
+
+  .f-card {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+    width: 100%;
+    padding: 6px;
+    background-color: #262626;
+    border-radius: 20px;
+  }
+
+  .f-text-area {
+    flex: 1;
+    width: 100%;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .f-cardtext {
+    color: #ffffff;
+    text-align: center;
+    width: 100%;
+    lines: 20;
+    text-overflow: ellipsis;
+  }
+
+  .f-cardfrom {
+    color: #999999;
+    text-align: right;
+    width: 100%;
+    lines: 2;
+    text-overflow: ellipsis;
+  }
+
+  .f-sz32 { font-size: 32px; }
+  .f-sz28 { font-size: 28px; }
+  .f-sz24 { font-size: 24px; }
+  .f-sz20 { font-size: 20px; }
+  .f-sz17 { font-size: 17px; }
+  .f-sz14 { font-size: 14px; }
+  .f-sz12 { font-size: 12px; }
+  .f-sz10 { font-size: 10px; }
+
+  .f-from-box {
+    width: 100%;
+    flex-direction: column;
+    align-items: flex-end;
+    margin-top: 4px;
+  }
+
+  .f-empty {
+    flex: 1;
+    width: 100%;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .f-empty-text {
+    font-size: 32px;
+    color: #ffffff;
+    text-align: center;
+  }
+
+  .f-empty-hint {
+    font-size: 22px;
+    color: #999999;
+    text-align: center;
+    width: 90%;
+    lines: 2;
+    margin-top: 10px;
+  }
+
+  .f-nav {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    height: 56px;
+    margin-top: 6px;
+    margin-bottom: 6px;
+  }
+
+  .f-navbtn {
+    justify-content: center;
+    align-items: center;
+    width: 48%;
+    height: 56px;
+    border-radius: 28px;
+    background-color: #262626;
+  }
+
+  .f-navtext {
+    font-size: 24px;
+    color: #ffffff;
+    text-align: center;
+  }
+</style>
+
+<script>
+  // 只依赖收藏存储与路由：**不要 import logic.js / data.js**，
+  // 否则收藏页会把整份句子库再打包一份（页面包逼近 1MB，且吃内存）。
+  import fav from '../../common/scripts/fav.js';
+  import router from '@system.router';
+  import device from '@system.device';
+
+  // 水平方向被吃掉的宽度：页面左右 padding 6*2 + 卡片 padding 6*2
+  const TEXT_INSET = 24;
+  // 竖向固定占用
+  const TOPBAR_H = 68;        // 56 + 上下 margin 各 6
+  const NAV_H = 68;           // 56 + 上下 margin 各 6
+  const CARD_PAD_V = 12;      // 卡片 padding 6*2
+
+  const FROM_OF_BODY = [28, 24, 20, 17, 14, 12, 10, 10];
+  const FROM_LINES_MAX = 2;
+  const FROM_LINE_RATIO = 1.5;
+  const FROM_MARGIN = 4;
+
+  const SIZES = [32, 28, 24, 20, 17, 14, 12, 10];
+  const LINE_RATIO = 1.7;
+  const NARROW = 0.55;
+
+  const MIN_AREA_H = 40;
+  const FALLBACK_SCREEN_H = 480;
+  const FALLBACK_SCREEN_W = 336;
+
+  export default {
+    data: {
+      list: [],
+      cur: 0,
+      total: 0,
+      hasList: false,
+      isEmpty: true,
+      showHolder: true,
+      pageText: '',
+      pageFrom: '',
+      showFrom: false,
+      textSize: 32,
+      fromSize: 28,
+      screenWidth: 0,
+      screenHeight: 0
+    },
+
+    onInit() {
+      console.info('一言：收藏页 onInit');
+      this.detectScreen();
+      this.reload(0);
+    },
+
+    onShow() {
+      // 从别处回来可能增删过收藏
+      this.reload(this.cur > 0 ? this.cur - 1 : 0);
+    },
+
+    detectScreen() {
+      let w = 0;
+      let h = 0;
+      try {
+        const app = this.$app;
+        w = (app && app.$def && app.$def.screenWidth) || 0;
+        h = (app && app.$def && app.$def.screenHeight) || 0;
+      } catch (e) {
+        w = 0;
+        h = 0;
+      }
+      if (w) {
+        this.screenWidth = w;
+      }
+      if (h) {
+        this.screenHeight = h;
+      }
+      this.applySize();
+      if (w && h) {
+        return;
+      }
+      try {
+        device.getInfo({
+          success: (info) => {
+            if (!info) {
+              return;
+            }
+            this.screenWidth = info.screenWidth || this.screenWidth;
+            this.screenHeight = info.screenHeight || this.screenHeight;
+            this.applySize();
+          },
+          fail: () => {}
+        });
+      } catch (e) {
+        console.error('一言：收藏页获取屏幕信息异常 ' + e);
+      }
+    },
+
+    /** 重新读收藏列表；keep 是希望停留的下标 */
+    reload(keep) {
+      fav.all((list) => {
+        this.list = list || [];
+        this.total = this.list.length;
+        this.hasList = this.total > 0;
+        this.isEmpty = !this.hasList;
+        this.showHolder = !this.hasList;
+        if (!this.hasList) {
+          this.cur = 0;
+          this.pageText = '';
+          this.pageFrom = '';
+          this.showFrom = false;
+          console.info('一言：收藏列表为空');
+          return;
+        }
+        let n = keep + 1;
+        if (n > this.total) {
+          n = this.total;
+        }
+        if (n < 1) {
+          n = 1;
+        }
+        this.show(n);
+        console.info('一言：收藏共 ' + this.total + ' 条，显示第 ' + n + ' 条');
+      });
+    },
+
+    show(n) {
+      if (n < 1 || n > this.total) {
+        return;
+      }
+      const it = this.list[n - 1] || {};
+      this.cur = n;
+      this.pageText = it.t || '';
+      const f = it.f || '';
+      this.pageFrom = f ? '—— ' + f : '';
+      this.showFrom = !!f;
+      this.applySize();
+    },
+
+    unitsOf(s) {
+      let n = 0;
+      for (let i = 0; i < s.length; i++) {
+        n += s.charCodeAt(i) >= 0x2e80 ? 1 : NARROW;
+      }
+      return n;
+    },
+
+    linesAtSize(s, f) {
+      const w = (this.screenWidth || FALLBACK_SCREEN_W) - TEXT_INSET;
+      if (!s || w <= 0 || !f) {
+        return 0;
+      }
+      let lines = Math.ceil(this.unitsOf(s) * f / w);
+      if (lines < 1) {
+        lines = 1;
+      }
+      if (lines > FROM_LINES_MAX) {
+        lines = FROM_LINES_MAX;
+      }
+      return lines;
+    },
+
+    fromSizeFor(bodySize) {
+      const s = this.pageFrom || '';
+      let idx = 0;
+      for (let i = 0; i < SIZES.length; i++) {
+        if (SIZES[i] === bodySize) {
+          idx = i;
+          break;
+        }
+      }
+      for (let i = idx; i < SIZES.length; i++) {
+        if (this.linesAtSize(s, FROM_OF_BODY[i]) <= FROM_LINES_MAX) {
+          return FROM_OF_BODY[i];
+        }
+      }
+      return SIZES[SIZES.length - 1];
+    },
+
+    fromHeight() {
+      const lines = this.linesAtSize(this.pageFrom, this.fromSize);
+      if (!lines) {
+        return 0;
+      }
+      return lines * (this.fromSize || SIZES[0]) * FROM_LINE_RATIO + FROM_MARGIN;
+    },
+
+    areaHeight(srcH) {
+      const sh = this.screenHeight || FALLBACK_SCREEN_H;
+      const h = sh - TOPBAR_H - NAV_H - CARD_PAD_V - (srcH || 0);
+      return h > MIN_AREA_H ? h : MIN_AREA_H;
+    },
+
+    pickSize(text, srcH) {
+      if (!text) {
+        return SIZES[0];
+      }
+      const units = this.unitsOf(text);
+      const w = (this.screenWidth || FALLBACK_SCREEN_W) - TEXT_INSET;
+      const h = this.areaHeight(srcH);
+      if (units <= 0 || w <= 0) {
+        return SIZES[0];
+      }
+      for (let i = 0; i < SIZES.length; i++) {
+        const f = SIZES[i];
+        if (Math.ceil(units * f / w) * f * LINE_RATIO <= h) {
+          return f;
+        }
+      }
+      return SIZES[SIZES.length - 1];
+    },
+
+    /** 与首页同一套两遍求解：出处字号跟着正文走 */
+    applySize() {
+      const text = this.pageText;
+      const first = this.pickSize(text, 0);
+      this.fromSize = this.fromSizeFor(first);
+      const second = this.pickSize(text, this.fromHeight());
+      this.fromSize = this.fromSizeFor(second);
+      this.textSize = second;
+    },
+
+    prev() {
+      if (this.cur > 1) {
+        this.show(this.cur - 1);
+      }
+    },
+
+    next() {
+      if (this.cur < this.total) {
+        this.show(this.cur + 1);
+      }
+    },
+
+    /** 移除当前这条收藏，然后停在下一条（或最后一条） */
+    removeCurrent() {
+      const it = this.list[this.cur - 1];
+      if (!it) {
+        return;
+      }
+      const keep = this.cur - 1;
+      fav.remove(it.t, () => {
+        console.info('一言：已移除收藏 ' + it.t.substring(0, 8));
+        this.reload(keep);
+      });
+    },
+
+    goBack() {
+      router.back();
+    },
+
+    onBackPress() {
+      router.back();
+      return true;
+    }
+  };
+</script>

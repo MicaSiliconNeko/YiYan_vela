@@ -1,20 +1,24 @@
 <template>
   <div class="page">
-    <!-- 顶栏：左右各一个 72×72 圆钮，标题 32px 居中（= 无源流沙 规范） -->
+    <!-- 顶栏：左 收藏开关 / 右 更多，标题 32px 居中（无源流沙 规范） -->
     <div class="topbar">
-      <div class="icon-btn" onclick="goToAbout">
-        <text class="icon-btn-text">关于</text>
+      <!-- 左：收藏开关（存当前这句）  右：更多（进过渡页选 搜索/收藏/关于） -->
+      <div class="icon-btn fav-on" if="{{isFav}}" onclick="toggleFav">
+        <text class="icon-btn-text">已藏</text>
+      </div>
+      <div class="icon-btn" if="{{showFavOff}}" onclick="toggleFav">
+        <text class="icon-btn-text">收藏</text>
       </div>
       <text class="title">一言</text>
-      <div class="icon-btn" onclick="goToSearch">
-        <text class="icon-btn-text">搜索</text>
+      <div class="icon-btn" onclick="goToMenu">
+        <text class="icon-btn-text">更多</text>
       </div>
     </div>
 
     <!--
       正文卡片：不用 <scroll>（真机上内部拿不到 width:100%，文字会贴边），
-      也不用「动态绑定的 style」（实测内存杀手，7000 条会 OOM）。
-      长句靠「多档静态字号 + if 条件挑选」完整显示：每个档位是一个写死
+      也不用动态绑定的 style（实测内存杀手，7000 条会 OOM）。
+      长句靠多档静态字号 + if 条件挑选完整显示：每个档位是一个写死
       font-size 的 CSS 类，模板里按 textSize 只显示其中一个。
       这种 if 切换与出处/提示是同一套机制，7000 条下已验证稳定。
     -->
@@ -41,7 +45,7 @@
       </div>
     </div>
 
-    <!-- 主操作：#0D6EFF 强调色按钮 -->
+    <!-- 主操作：换一句 -->
     <div class="primary-btn" onclick="refreshSentence">
       <text class="primary-text">换一句</text>
     </div>
@@ -51,17 +55,17 @@
 </template>
 
 <style>
-  /* ---- 设计令牌（无源流沙 / 小米手环 9 Pro，画布 336×480）----
-     背景 #000000 · 卡片与圆钮 #262626 · 强调 #0D6EFF
-     文字：标题/正文 32 白 · 次要 28 白 60%（#999999）
-     圆钮 72×72 · 卡片圆角 20 · 页面边距 6 · 屏角半径 48 */
+  /* ---- 设计令牌（无源流沙 / 小米手环 9 Pro，画布 336x480）----
+     背景 #000000   卡片与圆钮 #262626   强调 #0D6EFF
+     文字：标题/正文 32 白   次要 28 白 60%（#999999）
+     圆钮 72x72   卡片圆角 20   页面边距 6   屏角半径 48 */
   .page {
     width: 100%;
     height: 100%;
     flex-direction: column;
     align-items: center;
     /* 左右各留 6；上下边距交给子元素（页面本身带 padding 会额外占高，
-       整个纵向会超出屏幕，底部按钮被裁成「半个胶囊」） */
+       整个纵向会超出屏幕，底部按钮被裁成半个胶囊） */
     padding: 0 6px;
     background-color: #000000;
   }
@@ -141,7 +145,7 @@
   .sz12 { font-size: 12px; }
   .sz10 { font-size: 10px; }
 
-  /* 出处：白 60% ≈ #999999；字号跟着正文档位走（复用上面的 .szN），lines:2 只作安全上限 */
+  /* 出处：白 60% ~ #999999；字号跟着正文档位走（复用上面的 .szN），lines:2 只作安全上限 */
   .from-box {
     width: 100%;
     flex-direction: column;
@@ -158,8 +162,12 @@
   }
 
 
-  /* 主操作：#0D6EFF 强调色胶囊按钮（比卡片矮一档，把高度让给正文）
-     圆角写 28 = 高度的一半（真胶囊）；宽度收窄，把横向让出来但不影响正文高度 */
+  /* 已收藏时顶栏左钮用强调色 */
+  .fav-on {
+    background-color: #0d6eff;
+  }
+
+  /* 主操作：换一句胶囊 */
   .primary-btn {
     justify-content: center;
     align-items: center;
@@ -190,6 +198,7 @@
 
 <script>
   import logic from '../../common/scripts/logic.js';
+  import fav from '../../common/scripts/fav.js';
   import router from '@system.router';
   import device from '@system.device';
 
@@ -204,7 +213,7 @@
   const CARD_PAD_V = 12;      // card padding 6*2
   const HINT_H = 26;          // hint 行高 + margin（仅 showHint 时占位）
 
-  // 出处字号 = 正文档位「往下退一档」（32->28 正对应设计稿的标题 32 / 次要 28；
+  // 出处字号 = 正文档位往下退一档（32->28 正对应设计稿的标题 32 / 次要 28；
   // 正文缩到 14 时出处就跟着 12，不会出现出处比正文还大）。
   // 与 SIZES 一一对应，改 SIZES 时这张表要同步。
   const FROM_OF_BODY = [28, 24, 20, 17, 14, 12, 10, 10];
@@ -225,8 +234,12 @@
     data: {
       currentText: '加载中…',
       currentFrom: '',
+      fromRaw: '',
       showFrom: false,
       fromSize: 28,
+      // 收藏状态（showFavOff 是取反，模板里不写复杂表达式）
+      isFav: false,
+      showFavOff: true,
       hint: '',
       showHint: false,
       screenWidth: 0,
@@ -242,6 +255,8 @@
 
     onShow() {
       this.syncScreen();
+      // 从收藏页返回时，收藏状态可能变了
+      this.refreshFav();
     },
 
     /** 读屏幕尺寸：缩字号要按可用面积算，宽高都得拿到。 */
@@ -288,7 +303,7 @@
       }
     },
 
-    /** 字数换算成「汉字宽度」单位数（半角按 0.55 计） */
+    /** 字数换算成汉字宽度单位数（半角按 0.55 计） */
     unitsOf(s) {
       let n = 0;
       for (let i = 0; i < s.length; i++) {
@@ -352,9 +367,9 @@
     },
 
     /**
-     * 从档位里挑一个「整句能完整放下」的最大字号。
+     * 从档位里挑一个整句能完整放下的最大字号。
      * 字号 f 时每行放 W/f 个汉字单位，需要 ceil(units*f/W) 行，
-     * 总高 ≈ 行数 * f * LINE_RATIO ≤ H。
+     * 总高 ~ 行数 * f * LINE_RATIO <= H。
      */
     pickSize(text, srcH) {
       if (!text) {
@@ -398,11 +413,13 @@
         const item = logic.getRandom();
         if (item && item.t) {
           this.currentText = item.t;
+          this.fromRaw = item.f || '';
           this.currentFrom = item.f ? '—— ' + item.f : '';
           this.showFrom = !!item.f;
           this.hint = '';
           this.showHint = false;
           this.applySize();
+          this.refreshFav();
           console.info('一言：正文 ' + item.t.length + ' 字，字号 ' + this.textSize);
         } else {
           this.currentText = '暂无数据';
@@ -426,15 +443,49 @@
       this.loadRandom();
     },
 
-    goToSearch() {
-      router.push({ uri: 'pages/search' });
+    /** 刷新当前这条的收藏状态 */
+    refreshFav() {
+      const t = this.currentText;
+      if (!t) {
+        return;
+      }
+      try {
+        fav.has(t, (yes) => {
+          this.isFav = yes;
+          this.showFavOff = !yes;
+        });
+      } catch (e) {
+        console.error('一言：读取收藏状态异常 ' + e);
+      }
     },
 
-    goToAbout() {
-      router.push({ uri: 'pages/about' });
+    /** 点收藏：切换收藏状态 */
+    toggleFav() {
+      const t = this.currentText;
+      if (!t) {
+        return;
+      }
+      try {
+        fav.toggle({ t: t, f: this.fromRaw || '' }, (nowFav, list, ok) => {
+          this.isFav = nowFav;
+          this.showFavOff = !nowFav;
+          if (!ok) {
+            this.hint = nowFav ? '收藏保存失败' : '取消收藏失败';
+            this.showHint = true;
+          } else {
+            console.info('一言：收藏 ' + (nowFav ? '已添加' : '已移除') + '，共 ' + list.length + ' 条');
+          }
+        });
+      } catch (e) {
+        console.error('一言：收藏操作异常 ' + e);
+      }
     },
 
-    // 主页作为入口页，返回键不退出
+    /** 更多：进过渡页，再从那里进 搜索/收藏/关于 */
+    goToMenu() {
+      router.push({ uri: 'pages/menu' });
+    },
+
     onBackPress() {
       return false;
     }

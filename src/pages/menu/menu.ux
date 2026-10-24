@@ -1,0 +1,134 @@
+<template>
+  <div class="m-page">
+    <!-- 顶栏：返回 + 标题（无源流沙规范） -->
+    <div class="m-topbar">
+      <div class="m-icon-btn" onclick="goBack">
+        <text class="m-icon-btn-text">返回</text>
+      </div>
+      <text class="m-title">更多</text>
+      <div class="m-icon-btn-holder"></div>
+    </div>
+
+    <!-- 三个入口做成列表卡片，点一下进对应页面 -->
+    <div class="m-card" onclick="goSearch">
+      <text class="m-label">搜索</text>
+      <text class="m-desc">按出处找句子</text>
+    </div>
+
+    <div class="m-card" onclick="goFavorites">
+      <text class="m-label">收藏</text>
+      <text class="m-desc">看存下来的句子</text>
+    </div>
+
+    <div class="m-card" onclick="goAbout">
+      <text class="m-label">关于</text>
+      <text class="m-desc">句子数量与来源</text>
+    </div>
+  </div>
+</template>
+
+<style>
+  /* 令牌与其它页一致：背景 #000000 / 卡片与圆钮 #262626 / 强调 #0D6EFF
+     圆钮 56 / 圆角 20 / 页面边距 6 */
+  .m-page {
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 6px;
+    background-color: #000000;
+  }
+
+  .m-topbar {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    height: 56px;
+    margin-top: 6px;
+    margin-bottom: 6px;
+  }
+
+  .m-title {
+    flex: 1;
+    font-size: 32px;
+    font-weight: bold;
+    color: #ffffff;
+    text-align: center;
+  }
+
+  .m-icon-btn {
+    width: 56px;
+    height: 56px;
+    justify-content: center;
+    align-items: center;
+    border-radius: 28px;
+    background-color: #262626;
+  }
+
+  .m-icon-btn-holder {
+    width: 56px;
+    height: 56px;
+  }
+
+  .m-icon-btn-text {
+    font-size: 22px;
+    color: #ffffff;
+    text-align: center;
+  }
+
+  /* 入口卡片：上主标题、下小说明 */
+  .m-card {
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    width: 100%;
+    height: 104px;
+    padding: 12px 16px;
+    margin-bottom: 10px;
+    background-color: #262626;
+    border-radius: 20px;
+  }
+
+  .m-label {
+    font-size: 32px;
+    color: #ffffff;
+  }
+
+  .m-desc {
+    font-size: 24px;
+    color: #999999;
+    margin-top: 2px;
+  }
+</style>
+
+<script>
+  import router from '@system.router';
+
+  export default {
+    onInit() {
+      console.info('一言：更多页 onInit');
+    },
+
+    goSearch() {
+      router.push({ uri: 'pages/search' });
+    },
+
+    goFavorites() {
+      router.push({ uri: 'pages/favorites' });
+    },
+
+    goAbout() {
+      router.push({ uri: 'pages/about' });
+    },
+
+    goBack() {
+      router.back();
+    },
+
+    onBackPress() {
+      router.back();
+      return true;
+    }
+  };
+</script>
